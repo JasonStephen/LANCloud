@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>LAN Transfer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="bar">
+    <div>
+      <b>LAN Transfer</b>
+      <span class="muted">Used: {{ (used/1024/1024)|round(1) }} MB / Quota: {{ (quota/1024/1024)|round(1) }} MB</span>
+      {% if not can_upload %}<span class="badge">Download-only</span>{% endif %}
+    </div>
+    <button id="openUpload" {% if not can_upload %}disabled{% endif %}>Upload</button>
+    <button id="openSettings">⚙</button>
+  </header>
+
+  <nav class="tabs">
+    <a class="{{ 'on' if cat=='all' else '' }}" href="/?cat=all">All</a>
+    <a class="{{ 'on' if cat=='image' else '' }}" href="/?cat=image">Images</a>
+    <a class="{{ 'on' if cat=='doc' else '' }}" href="/?cat=doc">Documents</a>
+    <a class="{{ 'on' if cat=='video' else '' }}" href="/?cat=video">Videos</a>
+    <a class="{{ 'on' if cat=='archive' else '' }}" href="/?cat=archive">Archives</a>
+    <a class="{{ 'on' if cat=='other' else '' }}" href="/?cat=other">Others</a>
+  </nav>
+
+  <main>
+    <table class="list">
+      <thead>
+        <tr><th>Name</th><th>Type</th><th>Size</th><th>Expiry</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+      {% for f in files %}
+        <tr>
+          <td>{{ f['orig_name'] }}</td>
+          <td>{{ f['category'] }}</td>
+          <td>{{ (f['size_bytes']/1024/1024)|round(2) }} MB</td>
+          <td>
+            {% if f['is_forever'] == 1 %}Forever{% else %}{{ f['expires_at'] }}{% endif %}
+          </td>
+          <td>
+            <a href="/download/{{ f['id'] }}">Download</a>
+            <button class="danger delBtn" data-id="{{ f['id'] }}">Delete</button>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </main>
+
+  <!-- Upload Modal -->
+  <div id="modal" class="modal hidden">
+    <div class="card">
+      <div class="cardTop">
+        <b>Upload</b>
+        <button id="closeModal">×</button>
+      </div>
+
+      <div id="drop" class="drop">
+        <p>Drag files here<br/>or click to choose</p>
+        <input id="fileInput" type="file" multiple hidden />
+      </div>
+
+      <div class="row">
+        <label>Expiry</label>
+        <select id="expiry">
+          <option value="1">1 day</option>
+          <option value="3">3 days</option>
+          <option value="7" selected>7 days</option>
+          <option value="15">15 days</option>
+          <option value="30">30 days</option>
+          <option value="forever">Forever</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <button id="doUpload">Start Upload</button>
+        <span id="status" class="muted"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal hidden">
+    <div class="card">
+
+      <div class="cardTop">
+        <b>Storage Settings</b>
+        <button id="closeSettings">×</button>
+      </div>
+
+      <div class="row">
+        <label>Total Quota</label>
+        <input id="quotaSize" type="number" min="1" step="0.1">
+        <select id="quotaUnit">
+          <option value="gb">GB</option>
+          <option value="mb">MB</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>Max File</label>
+        <input id="fileSize" type="number" min="1" step="0.1">
+        <select id="fileUnit">
+          <option value="gb">GB</option>
+          <option value="mb">MB</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <button id="saveSettings">Save</button>
+        <span id="settingsStatus" class="muted"></span>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
