@@ -160,11 +160,15 @@ def upload():
     for f in uploaded:
 
         orig = f.filename or "file"
+
+        ext = ext_of(orig)  # 永远从原始名取后缀
+
+        if not ext:
+            ext = ""
+
+        stored = gen_stored_name(orig)
+
         orig_safe = safe_name(orig)
-
-        stored = gen_stored_name(orig_safe)
-
-        ext = ext_of(orig_safe)
         mime = detect_mime(orig_safe)
         category = classify_by_ext(ext)
 

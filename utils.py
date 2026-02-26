@@ -52,6 +52,7 @@ def normalise_expiry_choice(choice: str):
     return (0, compute_expires(days))
 
 def safe_name(name: str) -> str:
-    # secure_filename 會處理奇怪字元；中文也可能被替換，你也可自行改策略
-    s = secure_filename(name)
-    return s or "file"
+    ext = ext_of(name)
+    base = os.path.splitext(name)[0]
+    base_safe = secure_filename(base)
+    return (base_safe or "file") + ext

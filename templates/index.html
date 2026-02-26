@@ -12,7 +12,7 @@
       <span class="muted">Used: {{ (used/1024/1024)|round(1) }} MB / Quota: {{ (quota/1024/1024)|round(1) }} MB</span>
       {% if not can_upload %}<span class="badge">Download-only</span>{% endif %}
     </div>
-    <button id="openUpload" {% if not can_upload %}disabled{% endif %}>Upload</button>
+    <button id="openUpload" class="primary" {% if not can_upload %}disabled{% endif %}>Upload</button>
     <button id="openSettings">⚙</button>
   </header>
 
@@ -25,7 +25,7 @@
     <a class="{{ 'on' if cat=='other' else '' }}" href="/?cat=other">Others</a>
   </nav>
 
-  <main>
+  <main class="container">
     <table class="list">
       <thead>
         <tr><th>Name</th><th>Type</th><th>Size</th><th>Expiry</th><th>Action</th></tr>
@@ -45,6 +45,13 @@
           </td>
         </tr>
       {% endfor %}
+      {% if not files %}
+      <tr>
+        <td colspan="5" class="empty">
+          No files yet. Upload something 🚀
+        </td>
+      </tr>
+      {% endif %}
       </tbody>
     </table>
   </main>
